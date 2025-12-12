@@ -4,8 +4,12 @@ To predict 2D semantic labels, the model weights of InverseForm is required. Ple
 
 Follow the steps below to install `zsh` and `nano` if needed.
 ``` bash
-Apt update
-Apt install zsh
+apt update
+```
+```bash
+apt install zsh
+```
+```bash
 apt install nano -y
 ```
 
