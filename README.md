@@ -105,70 +105,12 @@ You can configure the scenario with the GUI, and download the yaml file to use i
 
 Here is a video for the GUI usage demonstration: [GUI Video](https://github.com/hyzhou404/HUGSIM/blob/main/assets/hugsim_gui.mp4)
 
-# Simulation
 
-**Before simulation, [UniAD_SIM](https://github.com/hyzhou404/UniAD_SIM), [VAD_SIM](https://github.com/hyzhou404/VAD_SIM) and [NAVSIM](https://github.com/hyzhou404/NAVSIM) client should be installed. The client environments are allowed to be separated from the HUGSIM environment.**
 
-The dependencies for NAVSIM are already specified as the pixi environment file, so you don't need to manually install the dependencies.
 
-In **closed_loop.py**, we automatically launch autonomous driving algorithms.
-
-Paths in **configs/sim/\*\_base.yaml** should be updated as paths on your machine.
-
-``` bash
-CUDA_VISIBLE_DEVICES=${sim_cuda} \
-python closed_loop.py --scenario_path ./configs/benchmark/${dataset_name}/${scenario_name}.yaml \
-            --base_path ./configs/sim/${dataset_name}_base.yaml \
-            --camera_path ./configs/sim/${dataset_name}_camera.yaml \
-            --kinematic_path ./configs/sim/kinematic.yaml \
-            --ad ${method_name: [uniad, vad, ltf]} \
-            --ad_cuda ${ad_cuda}
-```
-
-Run the following commands to execute.
-
-```bash
-sim_cuda=0
-ad_cuda=1
-
-# change this variable as the scenario path on your machine
-scenario_dir=${SCENARIO_PATH} 
-
-for cfg in ${scenario_dir}/*.yaml; do
-    echo ${cfg}
-    CUDA_VISIBLE_DEVICES=${sim_cuda} \
-    python closed_loop.py --scenario_path ${cfg} \
-                        --base_path ./configs/sim/nuscenes_base.yaml \
-                        --camera_path ./configs/sim/nuscenes_camera.yaml \
-                        --kinematic_path ./configs/sim/kinematic.yaml \
-                        --ad uniad \
-                        --ad_cuda ${ad_cuda}
-done
-```
-
-In practice, you may encounter errors due to an incorrect environment, path, and etc. For debugging purposes, you can modify the last part of code as:
-```python
-# process = launch(ad_path, args.ad_cuda, output)
-# try:
-#     create_gym_env(cfg, output)
-#     check_alive(process)
-# except Exception as e:
-#     print(e)
-#     process.kill()
-
-# For debug
-create_gym_env(cfg, output)
-```
-
-# TODO list
-- [x] Release sample data and results
-- [x] Release unicycle model part
-- [x] Release GUI
-- [x] Release more scenarios
 
 # Citation
 
-If you find our paper and codes useful, please kindly cite us via:
 
 ```bibtex
 @article{zhou2024hugsim,
