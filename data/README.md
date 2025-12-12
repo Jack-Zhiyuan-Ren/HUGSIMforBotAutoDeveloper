@@ -4,9 +4,9 @@ To predict 2D semantic labels, the model weights of InverseForm is required. Ple
 
 
 
-<summary>Waymo Open Dataset</summary>
+<summary>Botauto Dataset</summary>
 
-Download Waymo NOTR dataset following [the EmerNeRF doc](https://github.com/NVlabs/EmerNeRF/blob/main/docs/NOTR.md).
+Place '.tfrecord' files in the 'raw_data' folder
 
 Please select the **\$\{segment\}**, replace **\$\{base\_dir\}** and **\$\{out\}** variables as paths on your machine.
 
