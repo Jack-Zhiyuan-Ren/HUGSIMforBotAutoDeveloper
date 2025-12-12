@@ -135,7 +135,7 @@ if __name__ == "__main__":
     points, colors = [], []
 
     # directory root to save overlays of sampled ground points on images
-    overlay_root = os.path.join(out_dir, "debug_ground_overlays_v1")
+    overlay_root = os.path.join(out_dir, "debug_ground_overlays")
     os.makedirs(overlay_root, exist_ok=True)
     print(f"Overlay images root will be: {overlay_root}")
 
@@ -294,7 +294,7 @@ if __name__ == "__main__":
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points)
     pcd.colors = o3d.utility.Vector3dVector(colors)
-    out_ply = os.path.join(out_dir, "ground_points3d_v1.ply")
+    out_ply = os.path.join(out_dir, "ground_points3d.ply")
     o3d.io.write_point_cloud(out_ply, pcd)
     print(f"Saved ground point cloud to: {out_ply}")
 
@@ -332,5 +332,5 @@ if __name__ == "__main__":
             high_level_commands.append(2)  # forward
 
     print(high_level_commands)
-    with open(os.path.join(out_dir, "ground_param_v1.pkl"), "wb") as f:
+    with open(os.path.join(out_dir, "ground_param.pkl"), "wb") as f:
         pickle.dump((front_cam_poses, front_cam_height, high_level_commands), f)
