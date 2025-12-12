@@ -22,7 +22,7 @@
   <br>
 
   <p align="left">
-    This is the official project repository of the paper <b>HUGSIM: A Real-Time, Photo-Realistic and Closed-Loop Simulator for Autonomous Driving</b>.
+    This is the official project repository of the HUGSIM for BotAuto Data.
   </p>
   
 </div>
