@@ -11,6 +11,7 @@ def get_opts():
     parser.add_argument('--data_type', type=str, required=True)
     return parser.parse_args()
 
+#Intended to cull out-of-image points, but it’s never called.
 def checkcorner(corner, h, w):
     if np.all(corner < 0) or (corner[0] >= h and corner[1] >= w):
         return False
@@ -47,7 +48,7 @@ def main():
         w2c = np.linalg.inv(c2w)
 
         smt = np.load(os.path.join(basedir, rgb_path.replace('images', 'semantics').replace('.jpg', '.npy')).replace('.png', '.npy'))
-        car_mask = (smt == 11) | (smt == 12) | (smt == 13) | (smt == 14) | (smt == 15) | (smt == 18)
+        car_mask = (smt == 11) | (smt == 12) | (smt == 13) | (smt == 14) | (smt == 15) | (smt == 18) # ``car'', ``truck'', ``bus'', ``train'', ``motorcycle'', ``bicycle'' 
         mask = np.zeros_like(car_mask).astype(np.bool_)
 
         for iid, rt in f['dynamics'].items():
@@ -72,6 +73,13 @@ def main():
                 cv2.fillPoly(bbox_mask, [xy_screen[[1, 3, 6, 4, 1]]], 1)
                 cv2.fillPoly(bbox_mask, [xy_screen[[0, 2, 3, 1, 0]]], 1)
                 cv2.fillPoly(bbox_mask, [xy_screen[[5, 4, 6, 7, 5]]], 1)
+
+                overlap_pixels = np.logical_and(bbox_mask != 0, car_mask).sum()
+                print("frame", f["rgb_path"], "id", iid,
+                        "| box area:", int((bbox_mask != 0).sum()),
+                        "| car_mask:", int(car_mask.sum()),
+                        "| overlap:", int(overlap_pixels))
+
                 bbox_mask = bbox_mask & car_mask
                 mask = mask | (bbox_mask != 0)
 

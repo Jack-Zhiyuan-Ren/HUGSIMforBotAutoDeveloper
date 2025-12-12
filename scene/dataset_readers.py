@@ -168,12 +168,14 @@ def readHUGSIMCameras(path, data_type, ignore_dynamic):
             elif data_type == "waymo":
                 if idx % 15 >= 12:
                     test_cam_infos.append(cam_info)
+                    # train_cam_infos.append(cam_info) # use all data for training due to limited data
                 else:
                     train_cam_infos.append(cam_info)
 
             elif data_type == "pandaset":
                 if idx > 30 and idx % 30 >= 24:
                     test_cam_infos.append(cam_info)
+
                 else:
                     train_cam_infos.append(cam_info)
             
@@ -181,6 +183,135 @@ def readHUGSIMCameras(path, data_type, ignore_dynamic):
                 raise NotImplementedError
 
     return train_cam_infos, test_cam_infos, verts
+
+# def readHUGSIMCameras(path, data_type, ignore_dynamic):
+#     train_cam_infos, test_cam_infos = [], []
+#     with open(os.path.join(path, 'meta_data.json')) as json_file:
+#         meta_data = json.load(json_file)
+
+#         verts = {}
+#         if 'verts' in meta_data and not ignore_dynamic:
+#             verts_list = meta_data['verts']
+#             for k, v in verts_list.items():
+#                 verts[k] = np.array(v)
+
+#         frames = meta_data['frames']
+
+#         # separate index for waymo cam_1 frames only
+#         waymo_cam1_idx = 0
+
+#         for idx, frame in enumerate(frames):
+#             # ------------- FILTER FOR WAYMO CAM_1 ONLY -------------
+#             if data_type == "waymo":
+#                 rgb_rel = frame["rgb_path"]
+#                 if "/cam_1/" not in rgb_rel:
+#                     # skip cam_2, cam_3, etc.
+#                     continue
+
+#             c2w = np.array(frame['camtoworld'])
+
+#             rgb_path = os.path.join(path, frame['rgb_path'].replace('./', ''))
+
+#             rgb_split = rgb_path.split('/')
+#             image_name = '_'.join([rgb_split[-2], rgb_split[-1][:-4]])
+#             image = imread(rgb_path)
+
+#             semantic_2d = None
+#             semantic_pth = rgb_path.replace("images", "semantics").replace('.png', '.npy').replace('.jpg', '.npy')
+#             if os.path.exists(semantic_pth):
+#                 semantic_2d = np.load(semantic_pth)
+#                 semantic_2d[(semantic_2d == 14) | (semantic_2d == 15)] = 13
+
+#             optical_path = rgb_path.replace("images", "flow").replace('.png', '_flow.npy').replace('.jpg', '_flow.npy')
+#             if os.path.exists(optical_path):
+#                 optical_image = np.load(optical_path)
+#             else:
+#                 optical_image = None
+
+#             depth_path = rgb_path.replace("images", "depth").replace('.png', '.pt').replace('.jpg', '.pt')
+#             if os.path.exists(depth_path):
+#                 depth = torch.load(depth_path, weights_only=True)
+#             else:
+#                 depth = None
+
+#             mask = None
+#             mask_path = rgb_path.replace("images", "masks").replace('.png', '.npy').replace('.jpg', '.npy')
+#             if os.path.exists(mask_path):
+#                 mask = np.load(mask_path)
+
+#             timestamp = frame.get('timestamp', -1)
+
+#             intrinsic = np.array(frame['intrinsics'])
+            
+#             dynamics = {}
+#             if 'dynamics' in frame and not ignore_dynamic:
+#                 dynamics_list = frame['dynamics']
+#                 for iid in dynamics_list.keys():
+#                     dynamics[iid] = torch.tensor(dynamics_list[iid]).cuda()
+                
+#             cam_info = CameraInfo(
+#                 K=intrinsic,
+#                 c2w=c2w,
+#                 image=np.array(image),
+#                 image_path=rgb_path,
+#                 image_name=image_name,
+#                 height=image.shape[0],
+#                 width=image.shape[1],
+#                 semantic2d=semantic_2d,
+#                 optical_image=optical_image,
+#                 depth=depth,
+#                 mask=mask,
+#                 timestamp=timestamp,
+#                 dynamics=dynamics
+#             )
+            
+#             # ----------------- SPLIT LOGIC PER DATASET -----------------
+#             if data_type == 'kitti360':
+#                 if idx < 20:
+#                     train_cam_infos.append(cam_info)
+#                 elif idx % 20 < 16:
+#                     train_cam_infos.append(cam_info)
+#                 elif idx % 20 >= 16:
+#                     test_cam_infos.append(cam_info)
+#                 else:
+#                     continue
+
+#             elif data_type == 'kitti':
+#                 if idx < 10 or idx >= len(frames) - 4:
+#                     train_cam_infos.append(cam_info)
+#                 elif idx % 4 < 2:
+#                     train_cam_infos.append(cam_info)
+#                 elif idx % 4 == 2:
+#                     test_cam_infos.append(cam_info)
+#                 else:
+#                     continue
+
+#             elif data_type == "nuscenes":
+#                 if idx % 30 >= 24:
+#                     test_cam_infos.append(cam_info)
+#                 else:
+#                     train_cam_infos.append(cam_info)
+
+#             elif data_type == "waymo":
+#                 # use filtered cam_1-only index for splitting
+#                 if waymo_cam1_idx % 15 >= 12:
+#                     test_cam_infos.append(cam_info)
+#                     # train_cam_infos.append(cam_info) # if you want to use all for train
+#                 else:
+#                     train_cam_infos.append(cam_info)
+#                 waymo_cam1_idx += 1  # increment only for accepted cam_1 frames
+
+#             elif data_type == "pandaset":
+#                 if idx > 30 and idx % 30 >= 24:
+#                     test_cam_infos.append(cam_info)
+#                 else:
+#                     train_cam_infos.append(cam_info)
+            
+#             else:
+#                 raise NotImplementedError
+
+#     return train_cam_infos, test_cam_infos, verts
+
 
 
 def readHUGSIMInfo(path, data_type, ignore_dynamic):

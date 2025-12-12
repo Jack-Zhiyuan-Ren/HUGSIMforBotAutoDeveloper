@@ -124,7 +124,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Testing script parameters")
     parser.add_argument("--model_path", type=str)
     parser.add_argument("--output_path", type=str)
-    parser.add_argument("--iteration", type=int, default=30_000)
+    parser.add_argument("--iteration", type=int, default= 30_000) #default is 30_000
     parser.add_argument("--ver0", action="store_true")
     args = parser.parse_args()
 

@@ -1,3 +1,4 @@
+############ old
 *.pyc
 .vscode
 .idea
@@ -13,3 +14,30 @@ apex
 # pixi environments
 .pixi
 *.egg-info
+
+################## new
+ground_ply_analysis_v1
+ground_ply_analysis_v2
+ground_ply_analysis_v3
+ground_ply_analysis_v4
+ground_ply_analysis_v5
+ground_ply_analysis_v6
+ground_ply_analysis_v7
+ground_ply_analysis_v8
+ground_ply_analysis_v9
+ground_ply_analysis_v10
+ground_ply_analysis_v11
+
+points3d_ply_analysis
+points3d_ply_analysis_v1
+points3d_ply_analysis_v2
+points3d_ply_analysis_v3
+
+raw_data/*
+!raw_data/.gitkeep
+
+check_ground_reproj_error.py
+debug_semantics.py
+estimate_front_height.py
+view_ground_ply.py
+viz_ground_on_images.py

@@ -1,4 +1,8 @@
 import os
+########## new 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+#########################
+
 import torch
 from utils.loss_utils import l1_loss, ssim, ssim_loss
 from gaussian_renderer import render
@@ -23,6 +27,7 @@ tqdm = partial(std_tqdm, dynamic_ncols=True)
 results = {'train': {}, 'test': {}}
 
 # metrics
+
 m_psnr = PeakSignalNoiseRatio(data_range=1.0).to('cuda')
 m_ssim = StructuralSimilarityIndexMeasure(data_range=1.0).to('cuda')
 m_lpips = LearnedPerceptualImagePatchSimilarity().to('cuda')
@@ -38,7 +43,11 @@ def training(cfg):
 
     first_iter = 0
     prepare_output(cfg)
-    (ground_model_params, _) = torch.load(os.path.join(cfg.model_path, "ckpts", f"ground_chkpnt30000.pth"))
+    
+    #new
+    number_of_iterations = cfg.train.iterations
+    ###
+    (ground_model_params, _) = torch.load(os.path.join(cfg.model_path, "ckpts", f"ground_chkpnt{number_of_iterations}.pth"))
     gaussians = GaussianModel(cfg.model.sh_degree, feat_mutable=True, affine=cfg.affine, ground_args=ground_model_params)
     scene = Scene(cfg, gaussians, data_type=cfg.data_type)
     
@@ -64,7 +73,10 @@ def training(cfg):
 
     train_cams = scene.getTrainCameras().copy()
     train_dataset = HUGSIM_dataset(train_cams, cfg.data_type)
+    # train_dataloader = DataLoader(train_dataset, batch_size=2, shuffle=True, pin_memory=True, collate_fn=hugsim_collate, num_workers=4, prefetch_factor=2)
     train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True, pin_memory=True, collate_fn=hugsim_collate)
+
+    scale = cfg.train.iterations / 30000.0 # new
 
     for iteration in range(first_iter, cfg.train.iterations + 1):        
 
@@ -75,7 +87,10 @@ def training(cfg):
             dynamic_gaussian.update_learning_rate(iteration)
 
         # Every 1000 its we increase the levels of SH up to a maximum degree
-        if iteration % 1000 == 0:
+        sh_every = max(1, int(round(1000 * scale)))
+        
+        # if iteration % 1000 == 0:
+        if iteration % sh_every == 0:
             gaussians.oneupSHdegree()
             for iid, dynamic_gaussian in scene.dynamic_gaussians.items():
                 dynamic_gaussian.oneupSHdegree()
@@ -117,7 +132,11 @@ def training(cfg):
         distort_3d_loss = 0 
         N_sample=10
         grid_length = 0.2
-        if iteration > 2000:
+
+        
+        dist_start = int(round(2000 * scale))
+        # if iteration > 2000:
+        if iteration > dist_start:    
             ground_mask = torch.argmax(gaussians.get_3D_features, dim=1) <= 1
             w2c = torch.linalg.inv(viewpoint_cam.c2w)
             points = gaussians.get_xyz[ground_mask]
@@ -144,7 +163,33 @@ def training(cfg):
             reg_loss = reg_loss / len(unicycles)
             loss += reg_loss
 
-        loss.backward()
+        # loss.backward()
+
+        ##### new to prevent CUDA out of memory
+                # ---- Backward with OOM handling ----
+        try:
+            loss.backward()
+        except torch.cuda.OutOfMemoryError:
+            print(f"[ITER {iteration}] CUDA OOM during backward. Cleaning up and skipping this iter.")
+
+            # Drop references to big tensors from this iteration
+            del loss
+            del image, gt_image
+            del viewspace_point_tensor, render_pkg, info, radii, visibility_filter
+            if 'gt_semantic' in locals():
+                del gt_semantic
+            if 'gt_flow' in locals():
+                del gt_flow
+            if 'gt_depth' in locals():
+                del gt_depth
+            if 'mask' in locals():
+                del mask
+
+            torch.cuda.empty_cache()
+            torch.cuda.ipc_collect()
+
+            # Skip optimizer + densification for this iteration
+            continue
 
         iter_end.record()
 
@@ -236,6 +281,85 @@ def training(cfg):
                     gaussians.reset_opacity()
                     # for iid, dynamic_gaussian in scene.dynamic_gaussians.items():
                     #     dynamic_gaussian.reset_opacity()
+
+    # with torch.no_grad():
+    #     # cam1_dir = os.path.join(cfg.source_path, "cam1")
+    #     cam1_dir = os.path.join(cfg.source_path, "images", "cam_1")
+    #     output_dir = os.path.join(scene.model_path, "render_cam1_all")
+    #     os.makedirs(output_dir, exist_ok=True)
+
+    #     image_files = sorted([
+    #         f for f in os.listdir(cam1_dir)
+    #         if f.lower().endswith((".png", ".jpg", ".jpeg"))
+    #     ])
+
+    #     print(f"\nRendering all {len(image_files)} frames from cam1...")
+
+    #     cam1_view = None
+    #     for cam in scene.getTrainCameras() + scene.getTestCameras():
+    #         if hasattr(cam, "cam") and ("cam_1" in cam.cam or cam.cam == "1"):
+    #             cam1_view = cam
+    #             break
+
+    #     if cam1_view is None:
+    #         print("❌ Could not find cam1 camera in scene!")
+    #     else:
+    #         for i, img_name in enumerate(tqdm(image_files, desc="Rendering cam1")):
+    #             pkg = render(cam1_view, None, scene.gaussians, scene.dynamic_gaussians, unicycles, background)
+    #             img = torch.clamp(pkg["render"], 0.0, 1.0)
+    #             torchvision.utils.save_image(img, os.path.join(output_dir, f"{i:06d}.png"))
+
+    #     print(f"\n✅ Rendered all {len(image_files)} cam1 frames to {output_dir}")
+
+    # ---------------------------------------------------------------
+    # Render every frame whose image_path is under images/cam_1/
+    # ---------------------------------------------------------------
+    with torch.no_grad():
+        out_dir = os.path.join(scene.model_path, "render_cam_1_all")
+        os.makedirs(out_dir, exist_ok=True)
+
+        # Gather all viewpoints (train + test)
+        all_views = list(scene.getTrainCameras()) + list(scene.getTestCameras())
+
+        # Match by path/name containing cam_1 (case-insensitive; handles Windows/Unix paths)
+        def is_cam1_view(vp):
+            p = (getattr(vp, "image_path", "") or "").replace("\\", "/").lower()
+            n = (getattr(vp, "image_name", "") or "").lower()
+            return ("/images/cam_1/" in p) or ("/cam_1/" in p) or ("cam_1" in n)
+
+        cam1_views = [vp for vp in all_views if is_cam1_view(vp)]
+
+        if len(cam1_views) == 0:
+            print("❌ No cam_1 viewpoints found by path-based filter.")
+            # Tiny diagnostic to help adjust matching if needed
+            for vp in all_views[:5]:
+                print("  image_path:", getattr(vp, "image_path", None))
+                print("  image_name:", getattr(vp, "image_name", None))
+                print("  cam:", getattr(vp, "cam", None), "cam_id:", getattr(vp, "cam_id", None))
+        else:
+            # Sort by frame index if filenames contain numbers like 000000, 000001, ...
+            import re
+            def frame_key(vp):
+                name = getattr(vp, "image_name", "") or ""
+                m = re.search(r"(\d+)", name)
+                return int(m.group(1)) if m else name
+
+            cam1_views.sort(key=frame_key)
+
+            print(f"\nRendering {len(cam1_views)} frames from images/cam_1 ...")
+            for i, vp in enumerate(tqdm(cam1_views, desc="Rendering cam_1")):
+                pkg = render(vp, None, scene.gaussians, scene.dynamic_gaussians, unicycles, background)
+                img = torch.clamp(pkg["render"], 0.0, 1.0)
+
+                # Prefer the original image_name; fall back to an index-based name
+                img_name = getattr(vp, "image_name", f"{i:06d}.png")
+                if not img_name.lower().endswith((".png", ".jpg", ".jpeg")):
+                    img_name = f"{i:06d}.png"
+
+                torchvision.utils.save_image(img, os.path.join(out_dir, img_name))
+
+            print(f"\n✅ Rendered cam_1 sequence to: {out_dir}")
+
         
 
 def prepare_output(args):    
@@ -308,6 +432,8 @@ def main():
         cfg.source_path = args.source_path
     if len(args.model_path) > 0:
         cfg.model_path = args.model_path
+
+
         
     print("Optimizing " + args.model_path)
     training(cfg)

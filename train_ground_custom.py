@@ -23,6 +23,10 @@ tqdm = partial(std_tqdm, dynamic_ncols=True)
 
 # seedEverything()
 
+#### In this version, train on cam1 view only
+# 1651: Currently, still using points.ply and ground_points.ply for all three cams
+
+
 results = {'train': {}, 'test': {}}
 
 try:
@@ -42,6 +46,31 @@ def training(cfg):
         semantic_ce = CrossEntropyLoss()
     
     train_cams, test_cams, _ = load_cameras(cfg, cfg.data_type, True)
+
+    # ---------------------------------------------------------
+    # KEEP ONLY CAMERA 1
+    # ---------------------------------------------------------
+    def is_cam1(cam):
+        # 1) If your Camera has an explicit id/name, use that.
+        if hasattr(cam, "cam_id"):
+            return cam.cam_id == 1
+        if hasattr(cam, "camera_id"):
+            return cam.camera_id == 1
+        if hasattr(cam, "cam_name"):
+            return cam.cam_name in ["cam1", "camera1", "CAM1"]
+
+        # 2) Fallback: infer from image_name string
+        #   e.g. image_name like "cam1_000123" or ".../cam1/000123.png"
+        name = getattr(cam, "image_name", "")
+        return "cam1" in name or "camera1" in name
+
+    train_cams = [c for c in train_cams if is_cam1(c)]
+    test_cams  = [c for c in test_cams  if is_cam1(c)]
+
+    assert len(train_cams) > 0, "No train_cams found for camera1!"
+    # ---------------------------------------------------------
+
+
     train_dataset = HUGSIM_dataset(train_cams, cfg.data_type)
     test_dataset = HUGSIM_dataset(test_cams, cfg.data_type)
     train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True, pin_memory=True, collate_fn=hugsim_collate)

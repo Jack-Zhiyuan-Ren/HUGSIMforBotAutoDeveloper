@@ -53,4 +53,5 @@ def tocuda(ans):
     
 def hugsim_collate(data):
     assert len(data) == 1
+    # assert len(data) == 2
     return data[0]

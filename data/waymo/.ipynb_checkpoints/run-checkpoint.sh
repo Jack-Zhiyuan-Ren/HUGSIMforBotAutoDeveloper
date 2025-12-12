@@ -1,22 +1,18 @@
 #!/bin/bash
 
-cuda=0
+cuda=4
 export CUDA_VISIBLE_DEVICES=$cuda
 
 # base_dir="/nas/datasets/Waymo_NOTR/static"
 # segment="segment-10061305430875486848_1080_000_1100_000_with_camera_labels.tfrecord"
-# segment="segment-1083056852838271990_4080_000_4100_000_with_camera_labels.tfrecord"
 
-base_dir="/workspace/Jack/HUGSIM/raw_data"
-segment="segment-1083056852838271990_4080_000_4100_000_with_camera_labels.tfrecord"
-# segment="311238_part_0.tfrecord"
-# /workspace/Jack/HUGSIM/raw_data
+base_dir="/nas/datasets/Waymo_NOTR/dynamic"
+segment="segment-16801666784196221098_2480_000_2500_000_with_camera_labels.tfrecord"
+
 seg_prefix=$(echo $segment| cut -c 9-15)
-# seq_name=${seg_prefix}
-seq_name="1083056_v2"
-
-out=/workspace/Jack/HUGSIM/data/samplepoints_in_data/waymo_data/$seq_name
-cameras=(1 2 3)
+seq_name=${seg_prefix}
+out=/data3/hyzhou/data/HUGSIM/release/waymo/$seq_name
+cameras="1 2 3"
 
 
 mkdir -p $out

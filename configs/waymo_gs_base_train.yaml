@@ -1,42 +1,3 @@
-model:
-  sh_degree: 1
-  data_device: "cpu"
-  white_background: False
-  convert_SHs_python: False
-  compute_cov3D_python: False
-  eval: True
-
-ground:
-  n_sample: 10
-  grid_len: 0.2
-  min: -2
-  range: 4
-
-opt:
-  position_lr_init: 0.00016
-  position_lr_final: 1.6e-06
-  position_lr_delay_mult: 0.01
-  position_lr_max_steps: 30000
-  feature_lr: 0.0025
-  opacity_lr: 0.05
-  scaling_lr: 0.001
-  rotation_lr: 0.001
-  semantic_lr: 0.01
-  percent_dense: 0.001
-  densification_interval: 100
-  opacity_reset_interval: 3000
-  densify_from_iter: 500
-  densify_until_iter: 10000
-  densify_grad_threshold: 0.0002
-
-  lambda_dssim: 0.2
-  lambda_smt: 1.0
-  lambda_dist: 1.0
-
-train:
-  iterations: 30000
-  checkpoint_iterations: [7000, 15000, 30000]
-
 # model:
 #   sh_degree: 1
 #   data_device: "cpu"
@@ -55,26 +16,65 @@ train:
 #   position_lr_init: 0.00016
 #   position_lr_final: 1.6e-06
 #   position_lr_delay_mult: 0.01
-#   position_lr_max_steps: 60000        # was 30000
+#   position_lr_max_steps: 30000
 #   feature_lr: 0.0025
 #   opacity_lr: 0.05
 #   scaling_lr: 0.001
 #   rotation_lr: 0.001
 #   semantic_lr: 0.01
-#   percent_dense: 0.002                #was 0.001 
-#   densification_interval: 200         # was 100
-#   opacity_reset_interval: 6000        # was 3000
-#   densify_from_iter: 1000             # was 500
-#   densify_until_iter: 20000           # was 10000
-#   densify_grad_threshold: 0.0001      #was 0.0002
+#   percent_dense: 0.001
+#   densification_interval: 100
+#   opacity_reset_interval: 3000
+#   densify_from_iter: 500
+#   densify_until_iter: 10000
+#   densify_grad_threshold: 0.0002
 
 #   lambda_dssim: 0.2
 #   lambda_smt: 1.0
 #   lambda_dist: 1.0
 
 # train:
-#   iterations: 60000                   # was 30000
-#   checkpoint_iterations: [14000, 30000, 60000]   # doubled from [7000, 15000, 30000]
+#   iterations: 30000
+#   checkpoint_iterations: [7000, 15000, 30000]
+
+model:
+  sh_degree: 1
+  data_device: "cpu"
+  white_background: False
+  convert_SHs_python: False
+  compute_cov3D_python: False
+  eval: True
+
+ground:
+  n_sample: 10
+  grid_len: 0.2
+  min: -2
+  range: 4
+
+opt:
+  position_lr_init: 0.00016
+  position_lr_final: 1.6e-06
+  position_lr_delay_mult: 0.01
+  position_lr_max_steps: 60000        # was 30000
+  feature_lr: 0.0025
+  opacity_lr: 0.05
+  scaling_lr: 0.001
+  rotation_lr: 0.001
+  semantic_lr: 0.01
+  percent_dense: 0.002                #was 0.001 
+  densification_interval: 200         # was 100
+  opacity_reset_interval: 6000        # was 3000
+  densify_from_iter: 1000             # was 500
+  densify_until_iter: 20000           # was 10000
+  densify_grad_threshold: 0.0001      #was 0.0002
+
+  lambda_dssim: 0.2
+  lambda_smt: 1.0
+  lambda_dist: 1.0
+
+train:
+  iterations: 60000                   # was 30000
+  checkpoint_iterations: [14000, 30000, 60000]   # doubled from [7000, 15000, 30000]
 
 
 
@@ -162,7 +162,6 @@ train:
 #   iterations: 300000
 #   checkpoint_iterations: [75000, 150000, 225000, 300000]
 
-
 # model:
 #   sh_degree: 1
 #   data_device: "cpu"
@@ -246,47 +245,3 @@ train:
 # train:
 #   iterations: 600000                   # ↑
 #   checkpoint_iterations: [100000, 200000, 300000, 400000, 500000, 600000]
-
-
-# model:
-#   sh_degree: 1
-#   data_device: "cpu"
-#   white_background: False
-#   convert_SHs_python: False
-#   compute_cov3D_python: False
-#   eval: True
-
-# ground:
-#   n_sample: 10
-#   grid_len: 0.2
-#   min: -2
-#   range: 4
-
-# opt:
-#   position_lr_init: 0.00016
-#   position_lr_final: 1.6e-06
-#   position_lr_delay_mult: 0.01
-#   position_lr_max_steps: 1200000        # ↑ from 600k
-
-#   feature_lr: 0.0025
-#   opacity_lr: 0.05
-#   scaling_lr: 0.001
-#   rotation_lr: 0.001
-#   semantic_lr: 0.01
-#   percent_dense: 0.002
-
-#   # Densification schedule for very long runs
-#   densification_interval: 200
-#   opacity_reset_interval: 40000         # ~x2 from 600k config
-#   densify_from_iter: 3000               # same burn-in
-#   densify_until_iter: 480000            # ~40% of 1.2M
-#   densify_grad_threshold: 0.0001
-
-#   lambda_dssim: 0.2
-#   lambda_smt: 1.0
-#   lambda_dist: 1.0
-
-# train:
-#   iterations: 1200000                   # ↑ from 600k
-#   checkpoint_iterations: [200000, 400000, 600000, 800000, 1000000, 1200000]
-

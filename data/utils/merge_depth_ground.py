@@ -105,6 +105,7 @@ if __name__ == "__main__":
         local_colors = local_colors[sample_idx]
 
         local_points_w = (c2w[:3, :3] @ local_points.T).T + c2w[:3, 3]
+        
 
         points.append(local_points_w)
         colors.append(local_colors)
@@ -158,6 +159,7 @@ if __name__ == "__main__":
     o3d.io.write_point_cloud(os.path.join(args.out, "ground_points3d.ply"), pcd)
     
     # Get high level command
+    
     forecast = 20
     threshold = 2.5
     high_level_commands = []
