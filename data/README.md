@@ -6,7 +6,7 @@ To predict 2D semantic labels, the model weights of InverseForm is required. Ple
 
 <summary>Botauto Dataset</summary>
 
-Place '.tfrecord' files in the 'raw_data' folder
+Place `.tfrecord` files in the `raw_data` folder.
 
 Please select the **\$\{segment\}**, replace **\$\{base\_dir\}** and **\$\{out\}** variables as paths on your machine.
 
