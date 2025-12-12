@@ -4,7 +4,7 @@ To predict 2D semantic labels, the model weights of InverseForm is required. Ple
 
 
 
-<details> <summary>Waymo Open Dataset</summary>
+<summary>Waymo Open Dataset</summary>
 
 Download Waymo NOTR dataset following [the EmerNeRF doc](https://github.com/NVlabs/EmerNeRF/blob/main/docs/NOTR.md).
 
@@ -15,7 +15,7 @@ Run the following scripts to generate data for HUGSIM:
 cd data
 zsh ./waymo/run.sh
 ```
-</details>
+
 
 
 
