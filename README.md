@@ -68,6 +68,24 @@ Then run the script.
 zsh run_reconstruction.sh
 ```
 
+Optional: Install tmux to run sessions detached from the terminal
+```bash
+apt-get update -y && apt-get install -y tmux
+```
+Open a new sessions called "train"
+```bash
+tmux new -s train
+```
+To detach:
+ctrl-b and d
+Reattache to the session "train"
+```bash
+tmux attach -t train
+```
+delete the session "train"
+```bash
+tmux kill-session -t job
+```
 
 # Scene Export
 
