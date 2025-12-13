@@ -2,6 +2,8 @@
 
 To predict 2D semantic labels, the model weights of InverseForm is required. Please download the checkpoints from [here](https://github.com/Qualcomm-AI-research/InverseForm/tree/main) and place it in `--model_path /workspace/HUGSIMforBotAutoDeveloper/data/samplepoints_in_data/hrnet48_OCR_HMS_IF_checkpoint.pth` with paths on your machine in `InverseForm/infer_*.sh` scripts.
 
+Next, go to ``data/InverseForm/checkpoints``.
+
 Follow the steps below to install `zsh` and `nano` if needed.
 ``` bash
 apt update
