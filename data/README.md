@@ -9,7 +9,7 @@ wget -O distance_measures_regressor.pth \
   https://github.com/Qualcomm-AI-research/InverseForm/releases/download/v1.0/distance_measures_regressor.pth
 ```
 
-Follow the steps below to install `zsh` and `nano` if needed.
+$$ if needed $$. Follow the steps below to install `zsh` and `nano` 
 ``` bash
 apt update
 apt install zsh
