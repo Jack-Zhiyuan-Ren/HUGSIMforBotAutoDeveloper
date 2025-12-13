@@ -52,7 +52,8 @@ Or you can use `pixi run <command>` to run a command in the **pixi environment**
 
 Please refer to [Data Preparation Document](data/README.md)
 
-You can download sample data from [here](https://huggingface.co/datasets/hyzhou404/HUGSIM/tree/main/sample_data).
+You can download sample data from [here](https://drive.google.com/file/d/1GXdWYJKJMT-MNb7g8mDm9MHCURBmgkg7/view?usp=drive_link).
+The Sample data comes from Scene311238.
 
 # Reconstruction
 
