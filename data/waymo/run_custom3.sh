@@ -5,10 +5,10 @@ export CUDA_VISIBLE_DEVICES=$cuda
 
 
 
-base_dir="/workspace/Jack/HUGSIM/raw_data/split_311238_100parts"
+base_dir="/workspace/HUGSIMforBotAutoDeveloper/raw_data"
 segment="311238_part_0.tfrecord"
-seq_name="311238_part_0_100_v12"
-out=/workspace/Jack/HUGSIM/data/samplepoints_in_data/waymo_data/$seq_name
+seq_name="311238_part_0_100"
+out=/workspace/HUGSIMforBotAutoDeveloper/data/samplepoints_in_data/waymo_data/$seq_name
 cameras="(1 2 3)"
 
 
