@@ -57,18 +57,10 @@ The Sample data comes from Scene311238.
 
 # Reconstruction
 
-``` bash
-seq=${seq_name}
-input_path=${datadir}/${seq}
-output_path=${modeldir}/${seq}
-mkdir -p ${output_path}
-CUDA_VISIBLE_DEVICES=4 \
-python -u train_ground.py --data_cfg ./configs/${dataset_name: [kitti360, waymo, nusc, pandaset]}.yaml \
-        --source_path ${input_path} --model_path ${output_path}
-CUDA_VISIBLE_DEVICES=4 \
-python -u train.py --data_cfg ./configs/${dataset_name}.yaml \
-        --source_path ${input_path} --model_path ${output_path}
-```
+Go to `run_reconstruction.sh`.
+Replace **\$\{seq\}**,**\$\{input\_path\}**, and **\$\{output\_path\}** variables as paths on your machine.
+Recommendation:
+Place the output in ``data\samplepoints_in_data\Reconstruction`` folder.
 
 # Scene Export
 
