@@ -100,6 +100,13 @@ We've made some changes in the capturing and reloading code. If you would like t
 We have released all the 3DRealCar files, 49 scenes and corresponding 345 scenarios available at the [release link](https://huggingface.co/datasets/XDimLab/HUGSIM). 
 We are also holding a competition at [RealADSim @ ICCV 2025](https://huggingface.co/spaces/XDimLab/ICCV2025-RealADSim-ClosedLoop), so some scenarios and scenarios are hosted privately. We welcome participants to join!
 
+Tutorial for downloading one car:
+1. Go to the Files and Versions Tab
+2. Go to one folder, for example "2024_04_22_10_35_34". Download both ``gs.pth`` and ``wlh.json`` files.
+3. Go to ``Data/samplespoints_in_data/car_pth`` and create a folder of the same name (2024_04_22_10_35_34) and upload the two files to that folder.
+
+
+
 # Scenarios configuration with GUI
 
 **Note that this GUI is only used for configuration scenarios, rather than simulation. The rendering quality in GUI is not the results during simulation**
