@@ -31,7 +31,7 @@ Go to `data/waymo/run_custom3`. Replace **\$\{base\_dir\}**,**\$\{segement\}**, 
 Run the following scripts to generate data for HUGSIM:
 ``` bash
 cd data
-zsh ./waymo/run.sh
+zsh ./waymo/run_custom3.sh
 ```
 
 
