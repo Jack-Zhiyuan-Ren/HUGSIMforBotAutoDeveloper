@@ -78,7 +78,8 @@ tmux new -s train
 ```
 To detach:
 ctrl-b and d
-Reattache to the session "train"
+
+Reattach to the session "train"
 ```bash
 tmux attach -t train
 ```
