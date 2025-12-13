@@ -42,3 +42,4 @@ debug_semantics.py
 estimate_front_height.py
 view_ground_ply.py
 viz_ground_on_images.py
+**/.ipynb_checkpoints/
