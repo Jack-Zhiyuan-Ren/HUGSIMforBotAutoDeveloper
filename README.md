@@ -59,10 +59,11 @@ The Sample data comes from Scene311238.
 
 Go to `run_reconstruction.sh`.
 Replace **\$\{seq\}**,**\$\{input\_path\}**, and **\$\{output\_path\}** variables as paths on your machine.
-\\Recommendation:
+
+Recommendation:
 Place the output in ``data\samplepoints_in_data\Reconstruction`` folder.
-\\
-Then run the script
+
+Then run the script.
 ```bash
 zsh run_reconstruction.sh
 ```
