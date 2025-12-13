@@ -27,6 +27,7 @@ XFORMERS_AVAILABLE =False
 Place `.tfrecord` files in the `raw_data` folder.
 
 Go to `data/waymo/run_custom3`. Replace **\$\{base\_dir\}**,**\$\{segement\}**, **\$\{seq\_name\}** and **\$\{out\}** variables as paths on your machine.
+Recommendation: Place the output in the ``data\samplepoints_in_data\waymo_data`` folder.
 
 Run the following scripts to generate data for HUGSIM:
 ``` bash
